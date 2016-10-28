@@ -10,6 +10,12 @@ var context = canvas.getContext('2d');
 
 var skater = new Image();
 skater.src = 'resources/skater.png';
+var skaterPosDefault = [50,93];
+var skaterPos = skaterPosDefault;
+var skaterInAir = false;
+var jumpTime = 15;
+var jumpTimer = 0;
+
 
 context.moveTo(0,240);
 context.lineTo(720,240);
@@ -28,7 +34,7 @@ function main(){
   displayText(text);
 
   skater.onload = function(){
-    context.drawImage(skater, 50, 93);
+    context.drawImage(skater, skaterPos[0], skaterPos[1]);
   }
   //------------
   //Key Handlers
@@ -40,6 +46,12 @@ function main(){
   	if (keyPressed == 38)
   	{
   		    console.log("up");
+
+          if(skaterInAir == false){
+            skaterPos = [51, 80];
+            skaterInAir = true;
+            jumpTimer = jumpTime;
+          }
   	}
   	else if (keyPressed == 40)
   	{
@@ -73,7 +85,19 @@ function drawFrame(){
     displayText(score);
     score++;
 
-    context.drawImage(skater, 50, 93);
+    if(skaterInAir){
+      if(jumpTimer < 1){
+        skaterInAir = false;
+        skaterPos = skaterPosDefault;
+      }
+      else{
+        jumpTimer--;
+        skaterPos[1]++;
+      }
+
+    }
+
+    context.drawImage(skater, skaterPos[0], skaterPos[1]);
 
     context.moveTo(0,240);
     context.lineTo(720,240);
