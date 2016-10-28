@@ -30,11 +30,30 @@ function main(){
   skater.onload = function(){
     context.drawImage(skater, 50, 93);
   }
+  //------------
+  //Key Handlers
+  //------------
+  function keyPressHandler(event)
+  {
+  	var keyPressed = event.keyCode;
 
+  	if (keyPressed == 38)
+  	{
+  		    console.log("up");
+  	}
+  	else if (keyPressed == 40)
+  	{
+        console.log("down");
+  	}
+  }
+
+
+  document.addEventListener("keydown",keyPressHandler, false);
 
 
   onkeypress = function(){
     //var key = event.key;
+
     if (gameStarted == false){
       setInterval("drawFrame()", 1000/60); //60 Frames per second
       gameStarted = true;
