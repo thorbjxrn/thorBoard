@@ -16,10 +16,13 @@ var skaterPos = skaterPosDefault;
 var skaterInAir = false;
 var jumpHeight = 15;
 var jumpHeightTotal = jumpHeight;
-var jumpHeightMax = 60;
+var jumpHeightMax = 100;
 var jumpTimer = 0;
+var kickflipTime = 10;
+var flipTime = 0;
 
 var downKeyIsDown = false;
+var upKeyIsDown = false;
 
 context.moveTo(0,240);
 context.lineTo(720,240);
@@ -49,6 +52,7 @@ function main(){
     if(gameStarted == true){
     	if (keyPressed == 38)
     	{
+            upKeyIsDown = true;
     		    console.log("up");
             if(skaterPos == skaterPosDefault){
               skaterInAir = true;
@@ -68,6 +72,10 @@ function keyUpHandler(event){
   if(gameStarted == true){
     if (keyPressed == 40){
         downKeyIsDown = false;
+    }
+    if (keyPressed == 38)
+    {
+      upKeyIsDown = false;
     }
   }
 }
@@ -92,6 +100,10 @@ function displayText(text) {
 
 function drawPlayer(){
   if(skaterInAir){
+    if(downKeyIsDown && ! upKeyIsDown){
+
+      displayText("Kickflip!");
+    }
     jumpTimer++;
     if(jumpTimer < jumpHeightTotal){
       skaterPos[1]--;
@@ -108,6 +120,10 @@ function drawPlayer(){
       jumpTimer = 0;
     }
   }
+  else if(flipTime > 2){
+
+    console.log("DEAD");
+  }
   else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
     jumpHeightTotal++;
   }
@@ -116,7 +132,6 @@ function drawPlayer(){
       jumpHeightTotal--;
     }
   }
-
 
   context.drawImage(skater, skaterPos[0], skaterPos[1]);
 
