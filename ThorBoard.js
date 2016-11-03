@@ -10,10 +10,9 @@ var context = canvas.getContext('2d');
 
 var skater = new Image();
 skater.src = 'resources/skater.png';
+
 var flipImage = new Image();
 flipImage.src = 'kickflip.png';
-//http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
-
 
 var obstacles = new Image();
 obstacles.src = 'resources/obstacles.png';
@@ -25,8 +24,8 @@ var jumpHeight = 15;
 var jumpHeightTotal = jumpHeight;
 var jumpHeightMax = 100;
 var jumpTimer = 0;
-var kickflipTime = 10;
-var flipTime = 0;
+var trickTimerHeelflip = 60;
+var trickTimer = 0;
 
 var downKeyIsDown = false;
 var upKeyIsDown = false;
@@ -78,7 +77,7 @@ function main(){
     if(gameStarted == true){
     	if (keyPressed == 38)
     	{
-            upKeyIsDown = true;
+            upKeyIsDown = true;score
     		    console.log("up");
             if(skaterPos == skaterPosDefault){
               skaterInAir = true;
@@ -112,8 +111,7 @@ function keyUpHandler(event){
 
   onkeypress = function(){
     if (gameStarted == false){
-      setInterval("gameLogic()", 1000/60);
-      setInterval("drawFrame()", 1000/60); //60 Frames per second
+      setInterval("gameLogic()", 1000/60); //60 Frames per second
       gameStarted = true;
     }
   }// end key handling
@@ -127,57 +125,71 @@ function displayText(text) {
 
 
 function gameLogic(){
-    if(skaterInAir){
-        if(downKeyIsDown && ! upKeyIsDown){
+  if(skaterInAir){
+    if(downKeyIsDown &! upKeyIsDown){
+      displayText("Heelflip!");
+    }
+    jumpTimer++;
+    if(jumpTimer < jumpHeightTotal){
+      skaterPos[1]--;
+    }
+    else if (jumpTimer == jumpHeightTotal){
+      console.log(jumpTimer + " jumpTimer,");
+    }
+    else if (jumpTimer > jumpHeightTotal && jumpTimer < jumpHeightTotal*2){
+      skaterPos[1]++;
+    }
+    else {
+      skaterInAir = false;
+      jumpTimer = 0;
+    }
+  }
+  else if(trickTimer > 0){
 
-          displayText("Heelflip!");
-        }
-        jumpTimer++;
-        if(jumpTimer < jumpHeightTotal){
-          skaterPos[1]--;
-        }
-        else if (jumpTimer == jumpHeightTotal){
-          score++;
-          console.log(jumpTimer + " jumpTimer,");
-        }
-        else if (jumpTimer > jumpHeightTotal && jumpTimer < jumpHeightTotal*2){
-          skaterPos[1]++;
-        }
-        else {
-          skaterInAir = false;
-          jumpTimer = 0;
-        }
-      }
-      else if(flipTime > 2){
-
-        console.log("DEAD");
-      }
-      else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
-        jumpHeightTotal++;
-      }
-      else if(!downKeyIsDown) {
-        if(jumpHeightTotal > jumpHeight){
-          jumpHeightTotal--;
-        }
-      }
+    console.log("DEAD");
+  }
+  else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
+    jumpHeightTotal++;
+  }
+  else if(!downKeyIsDown) {
+    if(jumpHeightTotal > jumpHeight){
+      jumpHeightTotal--;
+    }
+  }
+  drawFrame();
 }
 
+var currentTrick = null; // Holds information about current trick;
 
 function drawFrame(){
     context.clearRect(0,0,canvas.width,canvas.height);
-    //Draw anything else...
-    displayText(jumpHeightTotal);
-    score++;
-
     context.moveTo(0,240);
-    context.lineTo(720,240);
     context.stroke();
 
+    //Draw anything else...
+    currentTrick = trick(currentTrick);
+    if(currentTrick != null){
+      displayText(currentTrick);
+    }
     drawPlayer();
-
 }
 
 function drawPlayer(){
-
   context.drawImage(skater, skaterPos[0], skaterPos[1]);
+}
+
+function trick(ct){
+  if(ct == null){
+    if(downKeyIsDown && skaterInAir && !upKeyIsDown){
+      ct = "heelflip";
+      trickTimer = trickTimerHeelflip;
+    }
+  }
+  else if(trickTimer > 0){
+    trickTimer--;
+  }
+  else{
+    ct = null;
+  }
+  return ct;
 }
