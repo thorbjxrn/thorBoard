@@ -12,6 +12,8 @@ var skater = new Image();
 skater.src = 'resources/skater.png';
 var flipImage = new Image();
 flipImage.src = 'kickflip.png';
+//http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+
 
 var obstacles = new Image();
 obstacles.src = 'resources/obstacles.png';
@@ -52,7 +54,7 @@ function sprite (options) {
 var spawnPoint = canvas.width;
 
 
-var obstacle0 = sprite({canvas, width: 100, height: 100, image: coinImage});
+var obstacle0 = sprite({canvas, width: 100, height: 100, image: obstacles});
 //help: http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 
 // execute main function now
