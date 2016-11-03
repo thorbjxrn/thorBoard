@@ -3,13 +3,16 @@
 //ThorBoard
 //A simple skateboarding game
 
-console.log("ThorBoard v 0.1");
+console.log("ThorBoard v 0.2");
 
 var canvas = document.getElementById('myCanvas');
 var context = canvas.getContext('2d');
 
 var skater = new Image();
 skater.src = 'resources/skater.png';
+
+var obstacles = new Image();
+obstacles.src = 'resources/obstacles.png';
 
 var skaterPosDefault = [50,93];
 var skaterPos = skaterPosDefault;
@@ -86,6 +89,7 @@ function keyUpHandler(event){
 
   onkeypress = function(){
     if (gameStarted == false){
+      setInterval("gameLogic()", 1000/60);
       setInterval("drawFrame()", 1000/60); //60 Frames per second
       gameStarted = true;
     }
@@ -98,44 +102,43 @@ function displayText(text) {
   context.strokeText(text,10,50);
 }
 
-function drawPlayer(){
-  if(skaterInAir){
-    if(downKeyIsDown && ! upKeyIsDown){
 
-      displayText("Kickflip!");
-    }
-    jumpTimer++;
-    if(jumpTimer < jumpHeightTotal){
-      skaterPos[1]--;
-    }
-    else if (jumpTimer == jumpHeightTotal){
-      score++;
-      console.log(jumpTimer + " jumpTimer,");
-    }
-    else if (jumpTimer > jumpHeightTotal && jumpTimer < jumpHeightTotal*2){
-      skaterPos[1]++;
-    }
-    else {
-      skaterInAir = false;
-      jumpTimer = 0;
-    }
-  }
-  else if(flipTime > 2){
+function gameLogic(){
+    if(skaterInAir){
+        if(downKeyIsDown && ! upKeyIsDown){
 
-    console.log("DEAD");
-  }
-  else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
-    jumpHeightTotal++;
-  }
-  else if(!downKeyIsDown) {
-    if(jumpHeightTotal > jumpHeight){
-      jumpHeightTotal--;
-    }
-  }
+          displayText("Kickflip!");
+        }
+        jumpTimer++;
+        if(jumpTimer < jumpHeightTotal){
+          skaterPos[1]--;
+        }
+        else if (jumpTimer == jumpHeightTotal){
+          score++;
+          console.log(jumpTimer + " jumpTimer,");
+        }
+        else if (jumpTimer > jumpHeightTotal && jumpTimer < jumpHeightTotal*2){
+          skaterPos[1]++;
+        }
+        else {
+          skaterInAir = false;
+          jumpTimer = 0;
+        }
+      }
+      else if(flipTime > 2){
 
-  context.drawImage(skater, skaterPos[0], skaterPos[1]);
-
+        console.log("DEAD");
+      }
+      else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
+        jumpHeightTotal++;
+      }
+      else if(!downKeyIsDown) {
+        if(jumpHeightTotal > jumpHeight){
+          jumpHeightTotal--;
+        }
+      }
 }
+
 
 function drawFrame(){
     context.clearRect(0,0,canvas.width,canvas.height);
@@ -147,8 +150,11 @@ function drawFrame(){
     context.lineTo(720,240);
     context.stroke();
 
-
     drawPlayer();
 
+}
 
+function drawPlayer(){
+
+  context.drawImage(skater, skaterPos[0], skaterPos[1]);
 }
