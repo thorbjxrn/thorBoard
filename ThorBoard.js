@@ -234,6 +234,5 @@ onkeypress = function(){
     score = 0
     refresher = setInterval("gameLogic()", 1000/60); //60 Frames per second
     gameStarted = true;
-    skater.src = 'resources/skater.png';
   }
 }
