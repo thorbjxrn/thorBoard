@@ -10,6 +10,8 @@ var context = canvas.getContext('2d');
 
 var skater = new Image();
 skater.src = 'resources/skater.png';
+var flipImage = new Image();
+flipImage.src = 'kickflip.png';
 
 var skaterPosDefault = [50,93];
 var skaterPos = skaterPosDefault;
