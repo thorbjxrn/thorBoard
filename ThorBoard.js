@@ -15,6 +15,7 @@ skater.src = 'resources/skater.png';
 
 var skaterSprite = new Image();
 skaterSprite.src = 'resources/skaterSprite.png';
+var skaterSpriteNr = 0; // standing
 
 var obstacles = new Image();
 obstacles.src = 'resources/obstacles.png';
@@ -64,11 +65,12 @@ main();
 //Functions:
 
 function main(){
-  skater.onload = function(){
-    context.drawImage(skater, skaterPos[0], skaterPos[1]);
-  }
+  displayText("loading...");
+
   var welcome = "hello world. press space to play or something";
-  resetGame(welcome);
+  skater.onload = function(){
+    resetGame(welcome);
+  }
   // end key handling
 
 } //end of main
@@ -123,15 +125,20 @@ function drawFrame(){
     context.stroke();
     //Draw anything else...
     currentTrick = trick(currentTrick);
-    if(currentTrick != null){
-      displayText(currentTrick + "! + " + howManyPoints(currentTrick));
+    if(gameStarted){
+      if(currentTrick != null){
+        displayText(currentTrick + "! + " + howManyPoints(currentTrick));
+      }
+      else{displayText(jumpHeightTotal);}
     }
-    else{displayText(jumpHeightTotal)}
-    drawPlayer();
+    drawSkater(skaterSpriteNr);
 }
 
-function drawPlayer(){
-  context.drawImage(skater, skaterPos[0], skaterPos[1]);
+
+function drawSkater(integer){
+
+  context.drawImage(skaterSprite, (integer*150), 0, 150, 150, skaterPos[0], skaterPos[1], 150, 150);
+
 }
 
 function trick(ct){
@@ -170,6 +177,7 @@ function dead(){
 }
 
 function resetGame(string){
+    //drawFrame();
     gameStarted = false;
     clearInterval(refresher);
     score = score - howManyPoints(currentTrick);
@@ -183,8 +191,6 @@ function resetGame(string){
     jumpHeightTotal = jumpHeight;
     jumpTimer = 0;
     trickTimer = 0;
-    //waiting skaterPos
-    skater.src = 'resources/skaterSprite.png';
 
 }
 
