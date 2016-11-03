@@ -34,6 +34,25 @@ context.stroke();
 var score = 0
 var gameStarted = false;
 
+console.log("canvas is this big: " + canvas.width);
+
+function sprite (options) {
+
+    var that = {};
+
+    that.context = options.context;
+    that.width = options.width;
+    that.height = options.height;
+    that.image = options.image;
+
+    return that;
+}
+var spawnPoint = canvas.width;
+
+
+var obstacle0 = sprite({canvas, width: 100, height: 100, image: coinImage});
+//help: http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+
 // execute main function now
 main();
 
@@ -107,7 +126,7 @@ function gameLogic(){
     if(skaterInAir){
         if(downKeyIsDown && ! upKeyIsDown){
 
-          displayText("Kickflip!");
+          displayText("Heelflip!");
         }
         jumpTimer++;
         if(jumpTimer < jumpHeightTotal){
