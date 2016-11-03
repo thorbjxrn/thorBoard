@@ -7,12 +7,14 @@ console.log("ThorBoard v 0.2");
 
 var canvas = document.getElementById('myCanvas');
 var context = canvas.getContext('2d');
+var refresher = null;
+var firstRun = true;
 
 var skater = new Image();
 skater.src = 'resources/skater.png';
 
-var flipImage = new Image();
-flipImage.src = 'kickflip.png';
+var skaterSprite = new Image();
+skaterSprite.src = 'resources/skaterSprite.png';
 
 var obstacles = new Image();
 obstacles.src = 'resources/obstacles.png';
@@ -62,59 +64,12 @@ main();
 //Functions:
 
 function main(){
-  var text = "hello world. press space to play or something";
-  displayText(text);
-
   skater.onload = function(){
     context.drawImage(skater, skaterPos[0], skaterPos[1]);
   }
-  //------------
-  //Key Handlers
-  //------------
-  function keyPressHandler(event)
-  {
-  	var keyPressed = event.keyCode;
-    if(gameStarted == true){
-    	if (keyPressed == 38)
-    	{
-            upKeyIsDown = true;score
-    		    console.log("up");
-            if(skaterPos == skaterPosDefault){
-              skaterInAir = true;
-              console.log("jump!");
-            }
-    	}
-    	else if (keyPressed == 40)
-    	{
-          console.log("down");
-          downKeyIsDown = true;
-    	}
-    }
-  }
-
-function keyUpHandler(event){
-  var keyPressed = event.keyCode;
-  if(gameStarted == true){
-    if (keyPressed == 40){
-        downKeyIsDown = false;
-    }
-    if (keyPressed == 38)
-    {
-      upKeyIsDown = false;
-    }
-  }
-}
-
-
-  document.addEventListener("keydown",keyPressHandler, false);
-  document.addEventListener("keyup",keyUpHandler, false);
-
-  onkeypress = function(){
-    if (gameStarted == false){
-      setInterval("gameLogic()", 1000/60); //60 Frames per second
-      gameStarted = true;
-    }
-  }// end key handling
+  var welcome = "hello world. press space to play or something";
+  resetGame(welcome);
+  // end key handling
 
 } //end of main
 
@@ -123,18 +78,14 @@ function displayText(text) {
   context.strokeText(text,10,50);
 }
 
-
 function gameLogic(){
   if(skaterInAir){
-    if(downKeyIsDown &! upKeyIsDown){
-      displayText("Heelflip!");
-    }
     jumpTimer++;
     if(jumpTimer < jumpHeightTotal){
       skaterPos[1]--;
     }
     else if (jumpTimer == jumpHeightTotal){
-      console.log(jumpTimer + " jumpTimer,");
+      //This is the top of the jump if you would like do something here
     }
     else if (jumpTimer > jumpHeightTotal && jumpTimer < jumpHeightTotal*2){
       skaterPos[1]++;
@@ -145,14 +96,19 @@ function gameLogic(){
     }
   }
   else if(trickTimer > 0){
-
-    console.log("DEAD");
+    dead();
   }
   else if(downKeyIsDown && (jumpHeightTotal < jumpHeightMax)){
     jumpHeightTotal++;
   }
+
+  else if (upKeyIsDown) {
+    if (skaterPos == skaterPosDefault){
+      skaterInAir = true;
+    }
+  }
   else if(!downKeyIsDown) {
-    if(jumpHeightTotal > jumpHeight){
+    if(jumpHeightTotal > (jumpHeight)){
       jumpHeightTotal--;
     }
   }
@@ -165,12 +121,12 @@ function drawFrame(){
     context.clearRect(0,0,canvas.width,canvas.height);
     context.moveTo(0,240);
     context.stroke();
-
     //Draw anything else...
     currentTrick = trick(currentTrick);
     if(currentTrick != null){
-      displayText(currentTrick);
+      displayText(currentTrick + "! + " + howManyPoints(currentTrick));
     }
+    else{displayText(jumpHeightTotal)}
     drawPlayer();
 }
 
@@ -183,6 +139,7 @@ function trick(ct){
     if(downKeyIsDown && skaterInAir && !upKeyIsDown){
       ct = "heelflip";
       trickTimer = trickTimerHeelflip;
+      score += 13;
     }
   }
   else if(trickTimer > 0){
@@ -192,4 +149,85 @@ function trick(ct){
     ct = null;
   }
   return ct;
+}
+
+function howManyPoints(ct){
+  if(ct == "heelflip"){
+    return 13;
+  }
+  else {
+    return 0;
+  }
+
+}
+
+// DEATH AND DESTRUCTION
+
+function dead(){
+  var message = ("You died.. " + score +" points! \nTry again?");
+  resetGame(message);
+  console.log("DEAD!");
+}
+
+function resetGame(string){
+    gameStarted = false;
+    clearInterval(refresher);
+    score = score - howManyPoints(currentTrick);
+    currentTrick = null;
+    displayText(string);
+    console.log("Game over. " + score + " points!");
+
+    //Default values
+    skaterPos = skaterPosDefault;
+    skaterInAir = false;
+    jumpHeightTotal = jumpHeight;
+    jumpTimer = 0;
+    trickTimer = 0;
+    //waiting skaterPos
+    skater.src = 'resources/skaterSprite.png';
+
+}
+
+//------------
+//Key Handlers
+//------------
+function keyDownHandler(event)
+{
+  var keyPressed = event.keyCode;
+  if(gameStarted == true){
+    if (keyPressed == 38)
+    {
+          upKeyIsDown = true;
+    }
+    else if (keyPressed == 40)
+    {
+        downKeyIsDown = true;
+    }
+  }
+}
+
+function keyUpHandler(event){
+var keyPressed = event.keyCode;
+if(gameStarted == true){
+  if (keyPressed == 40){
+      downKeyIsDown = false;
+  }
+  if (keyPressed == 38)
+  {
+    upKeyIsDown = false;
+  }
+}
+}
+
+
+document.addEventListener("keydown",keyDownHandler, false);
+document.addEventListener("keyup",keyUpHandler, false);
+
+onkeypress = function(){
+  if (gameStarted == false){
+    score = 0
+    refresher = setInterval("gameLogic()", 1000/60); //60 Frames per second
+    gameStarted = true;
+    skater.src = 'resources/skater.png';
+  }
 }
