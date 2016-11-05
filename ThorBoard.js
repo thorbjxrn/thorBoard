@@ -251,7 +251,7 @@ function howManyPoints(ct){
 
 function dead(){
   score = score - howManyPoints(currentTrick);
-  var message = ("You died... Final score: " + score + " points!");
+  var message = ("Wrecked... Final score: " + score + " points!");
   skaterSpriteNr = 8;
 
   resetGame(message);
