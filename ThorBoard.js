@@ -10,9 +10,6 @@ var context = canvas.getContext('2d');
 var refresher = null;
 var firstRun = true;
 
-var skater = new Image();
-skater.src = 'resources/skater.png';
-
 var skaterSprite = new Image();
 skaterSprite.src = 'resources/skaterSprite.png';
 var skaterSpriteNr = 0; // standing
@@ -68,7 +65,7 @@ function main(){
   displayText("loading...");
 
   var welcome = "hello world. press space to play or something";
-  skater.onload = function(){
+  skaterSprite.onload = function(){
     resetGame(welcome);
   }
   // end key handling
@@ -177,12 +174,12 @@ function dead(){
 }
 
 function resetGame(string){
-    //drawFrame();
     gameStarted = false;
+    drawFrame();
+    displayText(string);
     clearInterval(refresher);
     score = score - howManyPoints(currentTrick);
     currentTrick = null;
-    displayText(string);
     console.log("Game over. " + score + " points!");
 
     //Default values
