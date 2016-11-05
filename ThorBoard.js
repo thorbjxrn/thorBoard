@@ -10,12 +10,13 @@ var context = canvas.getContext('2d');
 var refresher = null;
 var firstRun = true;
 
+var framerate = 100;
+
 context.font = "30px Arial";
 
 var skaterSprite = new Image();
 skaterSprite.src = 'resources/skaterSprite.png';
 var skaterSpriteNr = 0; // standing
-var spriteChangeDelay = 0;
 
 var obstacles = new Image();
 obstacles.src = 'resources/obstacles.png';
@@ -83,9 +84,7 @@ function main(){
 } //end of main
 
 function displayText(t0, t1) { //possible to write to two lines!
-  console.log("displayText: " + t0 + ", " + t1);
-
-
+  //console.log("displayText: " + t0 + ", " + t1);
   if(t1 != null){
     context.strokeText(t0, 10, 30);
     context.strokeText(t1, 10, 60);
@@ -97,15 +96,7 @@ function displayText(t0, t1) { //possible to write to two lines!
 }
 
 function skaterSpriteLogic(spriteNr, time){
-  var t = time;
-  if (t == 0 || t == null){
-    skaterSpriteNr = spriteNr;
-  }
-  else if(t > 0){
-    t--;
-    skaterSpriteLogic(spriteNr, t);
-  }
-
+  setTimeout(function(){skaterSpriteNr = spriteNr}, (1000/framerate)*time);
 }
 
 function gameLogic(){
@@ -241,8 +232,8 @@ function resetGame(string){
       if (gameStarted == false){
         score = 0;
         skaterSpriteNr = 1;
-        skaterSpriteLogic(2, 1000); //change to sprite 2 after 10 frames
-        refresher = setInterval("gameLogic()", 1000/100); //60 Frames per second
+        skaterSpriteLogic(2, 20); //change to sprite 2 after 10 frames
+        refresher = setInterval("gameLogic()", 1000/framerate);
         gameStarted = true;
       }
     }
