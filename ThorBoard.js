@@ -18,8 +18,12 @@ var skaterSprite = new Image();
 skaterSprite.src = 'resources/skaterSprite.png';
 var skaterSpriteNr = 0; // standing
 
-var obstacles = new Image();
-obstacles.src = 'resources/obstacles.png';
+var obstacle = new Image();
+obstacle.src = 'resources/tux.png';
+var obstacleOnField = false;
+var spawnPoint = [canvas.width, 95];
+var obstacleCursor = spawnPoint;
+var moveSpeed = 2;
 
 var skaterPosDefault = [50,93];
 var skaterPos = skaterPosDefault;
@@ -42,6 +46,9 @@ function setDefaults(){
   jumpHeightTotal = jumpHeight;
   jumpTimer = 0;
   trickTimer = 0;
+
+  obstacleCursor = spawnPoint;
+  obstacleOnField = false;
 }
 
 var downKeyIsDown = false;
@@ -71,10 +78,9 @@ function sprite (options) {
 
     return that;
 }
-var spawnPoint = canvas.width;
 
 
-var obstacle0 = sprite({canvas, width: 100, height: 100, image: obstacles});
+//var obstacle = sprite({canvas, width: 150, height: 150, image: obstacle});
 //help: http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 
 // execute main function now
@@ -158,6 +164,7 @@ function gameLogic(){
 
   if(gameStarted){
     drawFrame();
+    obstacleLogic();
     if(currentTrick != null){
       displayText((currentTrick + "!"), ("+" + howManyPoints(currentTrick) + " points!"));
     }
@@ -167,6 +174,20 @@ function gameLogic(){
   }
 }
 
+function obstacleLogic(){
+  //todo
+  if(!obstacleOnField){
+    obstacleCursor = spawnPoint;
+    obstacleOnField = true;
+  }
+  else if (obstacleCursor[0] < -150) {
+    obstacleOnField = false;
+  }
+  else{
+    obstacleCursor[0] -= moveSpeed;
+  }
+  context.drawImage(obstacle, obstacleCursor[0], obstacleCursor[1]);
+}
 
 function drawFrame(){
     clearFrame();
