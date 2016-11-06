@@ -3,7 +3,7 @@
 //ThorBoard
 //A simple skateboarding game
 
-console.log("ThorBoard v 0.3");
+console.log("ThorBoard v 1.0");
 
 var canvas = document.getElementById('myCanvas');
 var context = canvas.getContext('2d');
@@ -21,18 +21,20 @@ var skaterSpriteNr = 0; // standing
 var obstacle = new Image();
 obstacle.src = 'resources/tux.png';
 var obstacleOnField = false;
-var spawnPoint = [canvas.width, 95];
-var obstacleCursor = spawnPoint;
+var spawnPoint = [700, 95];
+var obstacleCursor = [700, 95];
 var moveSpeed = 2;
 
 var skaterPosDefault = [50,93];
-var skaterPos = skaterPosDefault;
+var skaterPos = [50,93];
 var skaterInAir = false;
 var jumpHeight = 15;
 var jumpHeightTotal = jumpHeight;
 var jumpHeightMax = 115;
 var jumpTimer = 0;
 var jumpSpeed = 5;
+
+var deltaCrash = [skaterPos[0] - obstacleCursor[0], skaterPos[1] - obstacleCursor[1]];
 
 var currentTrick = null; // Holds information about current trick;
 var trickTimerHeelflip = framerate*2.5;
@@ -41,14 +43,14 @@ var trickTimer = 0;
 
 function setDefaults(){
   currentTrick = null;
-  skaterPos = skaterPosDefault;
+  skaterPos = [50,93];
   skaterInAir = false;
   jumpHeightTotal = jumpHeight;
   jumpTimer = 0;
   trickTimer = 0;
 
-  obstacleCursor = spawnPoint;
   obstacleOnField = false;
+  obstacleCursor = spawnPoint;
 }
 
 var downKeyIsDown = false;
@@ -121,11 +123,11 @@ function skaterSpriteLogic(spriteNr, time){ //Holds a wanted sprite change a bit
 
 function gameLogic(){
 
-  //todo: better jumping speed
+  //todo: better jumping, parabolic curve f.ex.
   if(skaterInAir){
     currentTrick = trick(currentTrick); // check if a trick is beeing executed
 
-    jumpTimer+=2;
+    jumpTimer++;
 
     if(jumpTimer < jumpHeightTotal){
       skaterPos[1]--;
@@ -164,20 +166,20 @@ function gameLogic(){
 
   if(gameStarted){
     drawFrame();
-    obstacleLogic();
     if(currentTrick != null){
       displayText((currentTrick + "!"), ("+" + howManyPoints(currentTrick) + " points!"));
     }
     else{
       displayText("Score: " + score, "jmp: " + (jumpHeightTotal - 15));
     }
+    obstacleLogic();
   }
 }
 
 function obstacleLogic(){
   //todo
   if(!obstacleOnField){
-    obstacleCursor = spawnPoint;
+    obstacleCursor = [700, 93]
     obstacleOnField = true;
   }
   else if (obstacleCursor[0] < -150) {
@@ -186,6 +188,13 @@ function obstacleLogic(){
   else{
     obstacleCursor[0] -= moveSpeed;
   }
+
+  if (Math.abs(obstacleCursor[0] - skaterPos[0]) < 40) {
+    if(Math.abs(obstacleCursor[1] - skaterPos[1]) < 40){
+      dead();
+    }
+  }
+
   context.drawImage(obstacle, obstacleCursor[0], obstacleCursor[1]);
 }
 
@@ -204,9 +213,7 @@ function clearFrame(){
 
 
 function drawSkater(){
-
   context.drawImage(skaterSprite, (skaterSpriteNr*150), 0, 150, 150, skaterPos[0], skaterPos[1], 150, 150);
-
 }
 
 function animateHeelFlip(){
@@ -271,15 +278,16 @@ function howManyPoints(ct){
 // DEATH AND DESTRUCTION
 
 function dead(){
+
   score = score - howManyPoints(currentTrick);
   var message = ("Wrecked... Final score: " + score + " points!");
   skaterSpriteNr = 8;
+  gameStarted = false;
 
   resetGame(message);
 }
 
 function resetGame(string){
-    gameStarted = false;
 
     clearFrame();
     clearInterval(refresher);
